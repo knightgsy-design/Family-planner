@@ -73,6 +73,10 @@
             <form id="recipe-form" class="recipe-form" hidden>
               <input id="recipe-name-input" type="text" placeholder="Recipe name" required />
               <textarea id="recipe-ingredients-input" placeholder="One ingredient per line…" rows="4"></textarea>
+              <label class="recipe-quick-label">
+                <input id="recipe-quick-input" type="checkbox" />
+                ⚡ Quick meal (fine for a busy weeknight)
+              </label>
               <div class="form-actions">
                 <button type="submit" class="ghost-btn primary">Save recipe</button>
                 <button type="button" id="cancel-recipe-btn" class="ghost-btn">Cancel</button>

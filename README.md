@@ -32,7 +32,11 @@ that template:
   a shopping list, with ingredient counts combined (e.g. "onion ×2") when
   more than one meal needs it. Items can also be added by hand, checked off,
   or cleared once bought — re-generating never unchecks anything already
-  ticked.
+  ticked. Recipes can be flagged **⚡ Quick** (fine for a busy weeknight);
+  Monday–Friday dinners only offer quick-tagged recipes (weekends and lunch
+  are unrestricted), so a rushed evening never turns up a recipe that needs
+  an hour. Seeded with a short starter set of 10 recipes — 6 quick, 4 not —
+  to pick from rather than an empty box.
 
 ## Deploying to Netlify
 

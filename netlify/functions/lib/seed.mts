@@ -187,9 +187,62 @@ export const DEFAULT_PLAN = {
       "Thursday 11:30–12:30: Baby yoga (from 17 September)",
   } as Record<string, string>,
 
-  // Shared recipe box: id -> { name, ingredients[] }. Empty to start —
-  // there's nothing to sensibly seed here.
-  recipes: {} as Record<string, { name: string; ingredients: string[] }>,
+  // Shared recipe box: id -> { name, ingredients[], quick }. A short
+  // starter list to pick from rather than an empty box — "quick" ones are
+  // realistic for a weeknight with Oscar's bedtime routine at 7; the rest
+  // are for when there's more time (weekends).
+  recipes: {
+    "fish-fingers-mash": {
+      name: "Fish fingers, peas & mash",
+      ingredients: ["Fish fingers", "Frozen peas", "Potatoes (for mash)", "Butter", "Milk"],
+      quick: true,
+    },
+    "omelette-salad": {
+      name: "Omelette & salad",
+      ingredients: ["Eggs", "Cheese", "Mixed salad leaves", "Cherry tomatoes", "Cucumber"],
+      quick: true,
+    },
+    "pasta-pesto": {
+      name: "Pasta with pesto",
+      ingredients: ["Pasta", "Pesto", "Cherry tomatoes", "Parmesan"],
+      quick: true,
+    },
+    "beans-on-toast": {
+      name: "Beans on toast",
+      ingredients: ["Bread", "Baked beans", "Cheese"],
+      quick: true,
+    },
+    "chicken-quesadillas": {
+      name: "Chicken quesadillas",
+      ingredients: ["Tortilla wraps", "Cooked chicken", "Cheese", "Peppers", "Salsa"],
+      quick: true,
+    },
+    "stir-fry-noodles": {
+      name: "Vegetable stir-fry & noodles",
+      ingredients: ["Noodles", "Mixed stir-fry vegetables", "Soy sauce", "Garlic", "Ginger"],
+      quick: true,
+    },
+    "spaghetti-bolognese": {
+      name: "Spaghetti Bolognese",
+      ingredients: ["Beef mince", "Onion", "Garlic", "Tinned tomatoes", "Tomato purée", "Spaghetti", "Parmesan"],
+      quick: false,
+    },
+    "roast-chicken": {
+      name: "Roast chicken & vegetables",
+      ingredients: ["Whole chicken", "Potatoes", "Carrots", "Parsnips", "Onion", "Gravy granules"],
+      quick: false,
+    },
+    "chicken-curry": {
+      name: "Chicken curry & rice",
+      ingredients: ["Chicken thighs", "Onion", "Garlic", "Ginger", "Curry powder", "Tinned tomatoes", "Coconut milk", "Rice"],
+      quick: false,
+    },
+    "shepherds-pie": {
+      name: "Shepherd's pie",
+      ingredients: ["Lamb mince (or beef)", "Onion", "Carrots", "Peas", "Potatoes (for mash)", "Worcestershire sauce", "Beef stock"],
+      quick: false,
+    },
+  } as Record<string, { name: string; ingredients: string[]; quick: boolean }>,
 
   // What's planned for lunch/dinner each day. Each value is either null
   // (nothing chosen), { type: "recipe", recipeId } pointing into `recipes`,

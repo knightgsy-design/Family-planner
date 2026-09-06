@@ -60,6 +60,7 @@
   const recipeForm = document.getElementById("recipe-form");
   const recipeNameInput = document.getElementById("recipe-name-input");
   const recipeIngredientsInput = document.getElementById("recipe-ingredients-input");
+  const recipeQuickInput = document.getElementById("recipe-quick-input");
   const cancelRecipeBtn = document.getElementById("cancel-recipe-btn");
   const shoppingListEl = document.getElementById("shopping-list");
   const generateShoppingBtn = document.getElementById("generate-shopping-btn");
@@ -136,10 +137,16 @@
       out[id] = {
         name: typeof recipe.name === "string" ? recipe.name : "Untitled recipe",
         ingredients: Array.isArray(recipe.ingredients) ? recipe.ingredients.filter((i) => typeof i === "string") : [],
+        quick: !!recipe.quick,
       };
     });
     return out;
   }
+
+  // Weeknights are tight (Oscar's bedtime routine starts at 7), so dinner
+  // on these days only offers recipes tagged "quick" — weekends have more
+  // time. Lunch is never restricted.
+  const QUICK_ONLY_DINNER_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
   function normalizeMeals(value) {
     const source = value && typeof value === "object" ? value : {};
@@ -474,9 +481,12 @@
         if (day === today) td.classList.add("today-col");
 
         const choice = plan.meals[day][key];
+        const restrictToQuick = key === "dinner" && QUICK_ONLY_DINNER_DAYS.includes(day);
+        const alreadyChosenId = choice && choice.type === "recipe" ? choice.recipeId : null;
 
         const select = document.createElement("select");
         select.className = "meal-select";
+        if (restrictToQuick) select.title = "Weeknight dinners are limited to quick meals";
 
         const noneOpt = document.createElement("option");
         noneOpt.value = "";
@@ -484,11 +494,14 @@
         select.appendChild(noneOpt);
 
         Object.entries(plan.recipes)
+          // Weeknight dinners only offer quick recipes — except whatever's
+          // already chosen, so an existing pick never just vanishes.
+          .filter(([id, recipe]) => !restrictToQuick || recipe.quick || id === alreadyChosenId)
           .sort((a, b) => a[1].name.localeCompare(b[1].name))
           .forEach(([id, recipe]) => {
             const opt = document.createElement("option");
             opt.value = `recipe:${id}`;
-            opt.textContent = recipe.name;
+            opt.textContent = recipe.quick ? `⚡ ${recipe.name}` : recipe.name;
             select.appendChild(opt);
           });
 
@@ -559,7 +572,7 @@
 
       const name = document.createElement("span");
       name.className = "recipe-name";
-      name.textContent = recipe.name;
+      name.textContent = recipe.quick ? `⚡ ${recipe.name}` : recipe.name;
       item.appendChild(name);
 
       const count = document.createElement("span");
@@ -889,6 +902,7 @@
     recipeForm.hidden = false;
     recipeNameInput.value = "";
     recipeIngredientsInput.value = "";
+    recipeQuickInput.checked = false;
     recipeNameInput.focus();
   });
 
@@ -904,7 +918,7 @@
       .split("\n")
       .map((line) => line.trim())
       .filter(Boolean);
-    plan.recipes[makeId()] = { name, ingredients };
+    plan.recipes[makeId()] = { name, ingredients, quick: recipeQuickInput.checked };
     recipeForm.hidden = true;
     renderRecipes();
     renderMealsTable();
