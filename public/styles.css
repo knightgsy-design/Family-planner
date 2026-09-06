@@ -16,6 +16,13 @@
   box-sizing: border-box;
 }
 
+/* Author rules like `.login-view { display: flex }` below would otherwise
+   override the browser's built-in `[hidden] { display: none }` — this makes
+   sure toggling the `hidden` attribute always actually hides the element. */
+[hidden] {
+  display: none !important;
+}
+
 html, body {
   margin: 0;
   padding: 0;
