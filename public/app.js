@@ -26,6 +26,17 @@
     { key: "imogen", title: "📚 Imogen" },
   ];
 
+  // Who a cell can be tagged with, and the color each shows up as — the
+  // same idea as Cozi's color-coded family members, just fixed to our five.
+  const PEOPLE = [
+    { key: "Jo", initial: "J", color: "#d9727f" },
+    { key: "Adam", initial: "A", color: "#5b8fd9" },
+    { key: "Oscar", initial: "O", color: "#f2b134" },
+    { key: "Imogen", initial: "I", color: "#7bc47f" },
+    { key: "All", initial: "★", color: "#9b8fd1" },
+  ];
+  const PEOPLE_BY_KEY = Object.fromEntries(PEOPLE.map((p) => [p.key, p]));
+
   const loginView = document.getElementById("login-view");
   const appView = document.getElementById("app-view");
   const loginForm = document.getElementById("login-form");
@@ -35,12 +46,16 @@
   const statusEl = document.getElementById("status-indicator");
   const table = document.getElementById("plan-table");
   const notesSection = document.getElementById("notes-section");
+  const todaySection = document.getElementById("today-section");
+  const searchInput = document.getElementById("search-input");
+  const searchCount = document.getElementById("search-count");
 
   let plan = null; // { grid, notes, updatedAt, updatedBy }
   let currentUser = null;
   let saveTimer = null;
   let pollTimer = null;
   let saving = false;
+  let searchQuery = "";
 
   function todayName() {
     // JS getDay(): 0=Sunday..6=Saturday. Map to our Monday-first list.
@@ -58,7 +73,54 @@
     el.style.height = el.scrollHeight + "px";
   }
 
+  // ---------- Cell data model ----------
+  //
+  // A grid cell is normally { text: string, people: string[] }. Older saved
+  // plans (or the seed data) may still have a plain string — normalize on
+  // the way in so both shapes work everywhere else in this file.
+
+  function normalizeCell(value) {
+    if (value && typeof value === "object") {
+      return {
+        text: typeof value.text === "string" ? value.text : "",
+        people: Array.isArray(value.people) ? value.people.filter((p) => PEOPLE_BY_KEY[p]) : [],
+      };
+    }
+    return { text: typeof value === "string" ? value : "", people: [] };
+  }
+
+  function getCell(slot, day) {
+    return normalizeCell(plan.grid[slot] && plan.grid[slot][day]);
+  }
+
+  function setCell(slot, day, cell) {
+    if (!plan.grid[slot]) plan.grid[slot] = {};
+    plan.grid[slot][day] = cell;
+  }
+
   // ---------- Rendering ----------
+
+  function renderPersonChips(cell, onToggle) {
+    const wrap = document.createElement("div");
+    wrap.className = "person-tags";
+    PEOPLE.forEach(({ key, initial, color }) => {
+      const active = cell.people.includes(key);
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "person-chip" + (active ? " active" : "");
+      chip.textContent = initial;
+      chip.title = key;
+      chip.style.setProperty("--chip-color", color);
+      chip.addEventListener("click", () => onToggle(key));
+      wrap.appendChild(chip);
+    });
+    return wrap;
+  }
+
+  function applyCellTint(td, cell) {
+    const firstColor = cell.people.length ? PEOPLE_BY_KEY[cell.people[0]].color : null;
+    td.style.setProperty("--cell-tint", firstColor ? firstColor + "22" : "transparent");
+  }
 
   function renderTable() {
     table.innerHTML = "";
@@ -90,15 +152,35 @@
         const td = document.createElement("td");
         td.className = "cell";
         if (day === today) td.classList.add("today-col");
+        td.dataset.slot = slot;
+        td.dataset.day = day;
+
+        const cell = getCell(slot, day);
+        applyCellTint(td, cell);
+
+        const chips = renderPersonChips(cell, (personKey) => {
+          const current = getCell(slot, day);
+          const idx = current.people.indexOf(personKey);
+          if (idx === -1) current.people.push(personKey);
+          else current.people.splice(idx, 1);
+          setCell(slot, day, current);
+          applyCellTint(td, current);
+          chips.querySelectorAll(".person-chip").forEach((chip, i) => {
+            chip.classList.toggle("active", current.people.includes(PEOPLE[i].key));
+          });
+          scheduleSave();
+        });
+        td.appendChild(chips);
 
         const textarea = document.createElement("textarea");
         textarea.rows = 1;
-        textarea.value = (plan.grid[slot] && plan.grid[slot][day]) || "";
+        textarea.value = cell.text;
         textarea.dataset.slot = slot;
         textarea.dataset.day = day;
         textarea.addEventListener("input", () => {
-          if (!plan.grid[slot]) plan.grid[slot] = {};
-          plan.grid[slot][day] = textarea.value;
+          const current = getCell(slot, day);
+          current.text = textarea.value;
+          setCell(slot, day, current);
           autoResize(textarea);
           scheduleSave();
         });
@@ -115,6 +197,65 @@
     requestAnimationFrame(() => {
       table.querySelectorAll("textarea").forEach(autoResize);
     });
+  }
+
+  function renderToday() {
+    todaySection.innerHTML = "";
+    const today = todayName();
+    const now = new Date();
+
+    const card = document.createElement("div");
+    card.className = "today-card";
+
+    const h2 = document.createElement("h2");
+    h2.textContent = `Today — ${today}, ${now.toLocaleDateString([], { month: "long", day: "numeric" })}`;
+    card.appendChild(h2);
+
+    const list = document.createElement("div");
+    list.className = "today-list";
+
+    let anyEntries = false;
+    TIME_SLOTS.forEach((slot) => {
+      const cell = getCell(slot, today);
+      if (!cell.text.trim()) return;
+      anyEntries = true;
+
+      const row = document.createElement("div");
+      row.className = "today-row";
+
+      const time = document.createElement("span");
+      time.className = "today-time";
+      time.textContent = slot;
+      row.appendChild(time);
+
+      const dots = document.createElement("span");
+      dots.className = "today-dots";
+      cell.people.forEach((key) => {
+        const dot = document.createElement("span");
+        dot.className = "person-dot";
+        dot.style.setProperty("--dot-color", PEOPLE_BY_KEY[key].color);
+        dot.title = key;
+        dots.appendChild(dot);
+      });
+      row.appendChild(dots);
+
+      const text = document.createElement("span");
+      text.className = "today-text";
+      text.textContent = cell.text;
+      row.appendChild(text);
+
+      list.appendChild(row);
+    });
+
+    if (!anyEntries) {
+      const empty = document.createElement("p");
+      empty.className = "today-empty";
+      empty.textContent = "Nothing on the plan for today yet.";
+      list.appendChild(empty);
+    }
+
+    card.appendChild(list);
+    todaySection.appendChild(card);
   }
 
   function renderNotes() {
@@ -141,9 +282,11 @@
   }
 
   function renderAll() {
+    renderToday();
     renderTable();
     renderNotes();
     updateMeta();
+    applySearch();
   }
 
   function updateMeta() {
@@ -156,6 +299,36 @@
         setStatus("Saved", "");
       }
     }
+  }
+
+  // ---------- Search ----------
+  //
+  // A lightweight filter across the grid and notes: matching cells/notes are
+  // highlighted, everything else dims slightly, so it's easy to spot what
+  // you're looking for in a page full of small text.
+
+  function applySearch() {
+    const query = searchQuery.trim().toLowerCase();
+    let matches = 0;
+    const active = query.length > 0;
+
+    table.querySelectorAll("td.cell").forEach((td) => {
+      const textarea = td.querySelector("textarea");
+      const isMatch = active && textarea.value.toLowerCase().includes(query);
+      td.classList.toggle("search-match", isMatch);
+      td.classList.toggle("search-dim", active && !isMatch);
+      if (isMatch) matches++;
+    });
+
+    notesSection.querySelectorAll(".note-card").forEach((card) => {
+      const textarea = card.querySelector("textarea");
+      const isMatch = active && textarea.value.toLowerCase().includes(query);
+      card.classList.toggle("search-match", isMatch);
+      card.classList.toggle("search-dim", active && !isMatch);
+      if (isMatch) matches++;
+    });
+
+    searchCount.textContent = active ? `${matches} match${matches === 1 ? "" : "es"}` : "";
   }
 
   // ---------- Networking ----------
@@ -212,11 +385,18 @@
           `textarea[data-slot="${CSS.escape(slot)}"][data-day="${CSS.escape(day)}"]`,
         );
         if (el && el === active) return;
-        const remoteVal = (remote.grid[slot] && remote.grid[slot][day]) || "";
-        if (plan.grid[slot]) plan.grid[slot][day] = remoteVal;
-        if (el && el.value !== remoteVal) {
-          el.value = remoteVal;
+        const remoteCell = normalizeCell(remote.grid[slot] && remote.grid[slot][day]);
+        setCell(slot, day, remoteCell);
+        if (el && el.value !== remoteCell.text) {
+          el.value = remoteCell.text;
           autoResize(el);
+        }
+        const td = table.querySelector(`td.cell[data-slot="${CSS.escape(slot)}"][data-day="${CSS.escape(day)}"]`);
+        if (td) {
+          applyCellTint(td, remoteCell);
+          td.querySelectorAll(".person-chip").forEach((chip, i) => {
+            chip.classList.toggle("active", remoteCell.people.includes(PEOPLE[i].key));
+          });
         }
       });
     });
@@ -232,6 +412,8 @@
     plan.updatedAt = remote.updatedAt;
     plan.updatedBy = remote.updatedBy;
     updateMeta();
+    renderToday();
+    applySearch();
   }
 
   async function pollForUpdates() {
@@ -317,6 +499,11 @@
     plan = null;
     currentUser = null;
     showLogin();
+  });
+
+  searchInput.addEventListener("input", () => {
+    searchQuery = searchInput.value;
+    applySearch();
   });
 
   // ---------- Boot ----------

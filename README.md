@@ -11,6 +11,20 @@ It's a static front end (`public/`) backed by a few Netlify Functions
 [Netlify Blobs](https://docs.netlify.com/blobs/overview/) — no separate
 database to set up.
 
+This is a **weekly template**, not a dated calendar — every Monday repeats
+the same plan rather than tracking specific dates. A few features borrowed
+from shared family calendars (Cozi, in particular) are layered on top of
+that template:
+
+- **Color-coded people** — tap the small dots above any cell's text to tag
+  it with Jo, Adam, Oscar, Imogen, or All; each gets its own color, and the
+  cell tints to match so you can scan who's doing what at a glance.
+- **Today panel** — a running agenda of just today's entries sits above the
+  grid, each line showing its person dots.
+- **Search** — the box in the header highlights matching cells and notes
+  and dims everything else, so a search across a page full of small text
+  is easy to scan.
+
 ## Deploying to Netlify
 
 1. **Create a new Netlify site from this repo** (via the Netlify UI —

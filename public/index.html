@@ -35,6 +35,10 @@
     <header class="topbar">
       <h1>🌸 Our Weekly Planner</h1>
       <div class="topbar-right">
+        <div class="search-box">
+          <input id="search-input" type="search" placeholder="Search the plan…" aria-label="Search the plan" />
+          <span id="search-count" class="search-count"></span>
+        </div>
         <span id="status-indicator" class="status">Loading…</span>
         <span id="whoami" class="whoami"></span>
         <button id="logout-btn" class="ghost-btn">Log out</button>
@@ -42,6 +46,10 @@
     </header>
 
     <main class="content">
+      <section class="today-section" id="today-section">
+        <!-- today card injected by app.js -->
+      </section>
+
       <section class="grid-section">
         <div class="table-scroll">
           <table id="plan-table" class="plan-table" aria-label="Weekly schedule"></table>
