@@ -325,25 +325,90 @@ button {
 
 /* ---------- Today panel ---------- */
 
-.today-card {
+.daily-card {
   background: var(--card);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 16px 20px;
 }
 
-.today-card h2 {
-  margin: 0 0 12px;
-  font-size: 1.05rem;
+.daily-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
-.today-list {
+.daily-day-label {
+  margin: 0;
+  font-size: 1.05rem;
+  flex: 1;
+}
+
+.daily-nav-btn {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--ink-soft);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+
+.daily-nav-btn:hover {
+  background: var(--today);
+}
+
+.daily-today-btn {
+  flex: 0 0 auto;
+}
+
+.daily-filter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.person-filter-chip {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--chip-color, var(--border));
+  background: transparent;
+  color: var(--chip-color, var(--ink-soft));
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.person-filter-chip.active {
+  background: var(--chip-color, var(--ink-soft));
+  color: white;
+}
+
+.daily-clear-filter {
+  margin-left: 4px;
+}
+
+.daily-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.today-row {
+.daily-row {
   display: flex;
   align-items: baseline;
   gap: 10px;
@@ -352,11 +417,11 @@ button {
   font-size: 0.9rem;
 }
 
-.today-row:last-child {
+.daily-row:last-child {
   border-bottom: none;
 }
 
-.today-time {
+.daily-time {
   flex: 0 0 auto;
   font-weight: 600;
   color: var(--ink-soft);
@@ -364,7 +429,7 @@ button {
   min-width: 78px;
 }
 
-.today-dots {
+.daily-dots {
   display: flex;
   gap: 3px;
   flex: 0 0 auto;
@@ -378,11 +443,11 @@ button {
   display: inline-block;
 }
 
-.today-text {
+.daily-text {
   color: var(--ink);
 }
 
-.today-empty {
+.daily-empty {
   color: var(--ink-soft);
   font-size: 0.9rem;
   margin: 0;

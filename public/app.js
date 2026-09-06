@@ -46,7 +46,7 @@
   const statusEl = document.getElementById("status-indicator");
   const table = document.getElementById("plan-table");
   const notesSection = document.getElementById("notes-section");
-  const todaySection = document.getElementById("today-section");
+  const dailySection = document.getElementById("daily-section");
   const searchInput = document.getElementById("search-input");
   const searchCount = document.getElementById("search-count");
 
@@ -56,6 +56,8 @@
   let pollTimer = null;
   let saving = false;
   let searchQuery = "";
+  let dailyDayIndex = 0; // set to today's index once the app boots
+  let dailyFilter = []; // person keys to filter the daily view to; empty = show all
 
   function todayName() {
     // JS getDay(): 0=Sunday..6=Saturday. Map to our Monday-first list.
@@ -199,37 +201,114 @@
     });
   }
 
-  function renderToday() {
-    todaySection.innerHTML = "";
-    const today = todayName();
-    const now = new Date();
+  function renderDaily() {
+    dailySection.innerHTML = "";
+    const day = DAYS[dailyDayIndex];
+    const isToday = day === todayName();
 
     const card = document.createElement("div");
-    card.className = "today-card";
+    card.className = "daily-card";
+
+    // Day navigation: step backward/forward through the week, or jump
+    // straight back to today.
+    const nav = document.createElement("div");
+    nav.className = "daily-nav";
+
+    const prevBtn = document.createElement("button");
+    prevBtn.type = "button";
+    prevBtn.className = "daily-nav-btn";
+    prevBtn.textContent = "‹";
+    prevBtn.setAttribute("aria-label", "Previous day");
+    prevBtn.addEventListener("click", () => {
+      dailyDayIndex = (dailyDayIndex + 6) % 7;
+      renderDaily();
+    });
+    nav.appendChild(prevBtn);
 
     const h2 = document.createElement("h2");
-    h2.textContent = `Today — ${today}, ${now.toLocaleDateString([], { month: "long", day: "numeric" })}`;
-    card.appendChild(h2);
+    h2.className = "daily-day-label";
+    h2.textContent = day + (isToday ? " · Today" : "");
+    nav.appendChild(h2);
 
+    const nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.className = "daily-nav-btn";
+    nextBtn.textContent = "›";
+    nextBtn.setAttribute("aria-label", "Next day");
+    nextBtn.addEventListener("click", () => {
+      dailyDayIndex = (dailyDayIndex + 1) % 7;
+      renderDaily();
+    });
+    nav.appendChild(nextBtn);
+
+    if (!isToday) {
+      const todayBtn = document.createElement("button");
+      todayBtn.type = "button";
+      todayBtn.className = "ghost-btn daily-today-btn";
+      todayBtn.textContent = "Today";
+      todayBtn.addEventListener("click", () => {
+        dailyDayIndex = DAYS.indexOf(todayName());
+        renderDaily();
+      });
+      nav.appendChild(todayBtn);
+    }
+
+    card.appendChild(nav);
+
+    // Person filter: toggle one or more people to show only their entries.
+    const filterRow = document.createElement("div");
+    filterRow.className = "daily-filter";
+    PEOPLE.forEach(({ key, initial, color }) => {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "person-filter-chip" + (dailyFilter.includes(key) ? " active" : "");
+      chip.style.setProperty("--chip-color", color);
+      chip.textContent = initial;
+      chip.title = `Filter to ${key}`;
+      chip.addEventListener("click", () => {
+        const idx = dailyFilter.indexOf(key);
+        if (idx === -1) dailyFilter.push(key);
+        else dailyFilter.splice(idx, 1);
+        renderDaily();
+      });
+      filterRow.appendChild(chip);
+    });
+    if (dailyFilter.length) {
+      const clearBtn = document.createElement("button");
+      clearBtn.type = "button";
+      clearBtn.className = "ghost-btn daily-clear-filter";
+      clearBtn.textContent = "Clear filter";
+      clearBtn.addEventListener("click", () => {
+        dailyFilter = [];
+        renderDaily();
+      });
+      filterRow.appendChild(clearBtn);
+    }
+    card.appendChild(filterRow);
+
+    // Entries for the selected day, narrowed to the filter if one is set.
     const list = document.createElement("div");
-    list.className = "today-list";
+    list.className = "daily-list";
 
     let anyEntries = false;
+    let anyMatching = false;
     TIME_SLOTS.forEach((slot) => {
-      const cell = getCell(slot, today);
+      const cell = getCell(slot, day);
       if (!cell.text.trim()) return;
       anyEntries = true;
+      if (dailyFilter.length && !cell.people.some((p) => dailyFilter.includes(p))) return;
+      anyMatching = true;
 
       const row = document.createElement("div");
-      row.className = "today-row";
+      row.className = "daily-row";
 
       const time = document.createElement("span");
-      time.className = "today-time";
+      time.className = "daily-time";
       time.textContent = slot;
       row.appendChild(time);
 
       const dots = document.createElement("span");
-      dots.className = "today-dots";
+      dots.className = "daily-dots";
       cell.people.forEach((key) => {
         const dot = document.createElement("span");
         dot.className = "person-dot";
@@ -240,7 +319,7 @@
       row.appendChild(dots);
 
       const text = document.createElement("span");
-      text.className = "today-text";
+      text.className = "daily-text";
       text.textContent = cell.text;
       row.appendChild(text);
 
@@ -249,13 +328,18 @@
 
     if (!anyEntries) {
       const empty = document.createElement("p");
-      empty.className = "today-empty";
-      empty.textContent = "Nothing on the plan for today yet.";
+      empty.className = "daily-empty";
+      empty.textContent = `Nothing on the plan for ${day} yet.`;
+      list.appendChild(empty);
+    } else if (!anyMatching) {
+      const empty = document.createElement("p");
+      empty.className = "daily-empty";
+      empty.textContent = `Nothing for ${dailyFilter.join(", ")} on ${day}.`;
       list.appendChild(empty);
     }
 
     card.appendChild(list);
-    todaySection.appendChild(card);
+    dailySection.appendChild(card);
   }
 
   function renderNotes() {
@@ -282,7 +366,7 @@
   }
 
   function renderAll() {
-    renderToday();
+    renderDaily();
     renderTable();
     renderNotes();
     updateMeta();
@@ -412,7 +496,7 @@
     plan.updatedAt = remote.updatedAt;
     plan.updatedBy = remote.updatedBy;
     updateMeta();
-    renderToday();
+    renderDaily();
     applySearch();
   }
 
@@ -445,6 +529,8 @@
   async function showApp(user) {
     currentUser = user;
     whoami.textContent = `Logged in as ${user}`;
+    dailyDayIndex = DAYS.indexOf(todayName());
+    dailyFilter = [];
     loginView.hidden = true;
     appView.hidden = false;
     setStatus("Loading plan…", "saving");

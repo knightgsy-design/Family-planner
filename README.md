@@ -19,8 +19,10 @@ that template:
 - **Color-coded people** — tap the small dots above any cell's text to tag
   it with Jo, Adam, Oscar, Imogen, or All; each gets its own color, and the
   cell tints to match so you can scan who's doing what at a glance.
-- **Today panel** — a running agenda of just today's entries sits above the
-  grid, each line showing its person dots.
+- **Daily view** — an agenda above the grid for one day at a time, defaulting
+  to today. Step through the week with the ‹ › arrows (it wraps around), jump
+  back to today with one tap, and filter to one or more people to see just
+  their entries for that day.
 - **Search** — the box in the header highlights matching cells and notes
   and dims everything else, so a search across a page full of small text
   is easy to scan.
