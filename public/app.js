@@ -61,6 +61,7 @@
   const recipeNameInput = document.getElementById("recipe-name-input");
   const recipeIngredientsInput = document.getElementById("recipe-ingredients-input");
   const recipeQuickInput = document.getElementById("recipe-quick-input");
+  const recipeSourceInput = document.getElementById("recipe-source-input");
   const cancelRecipeBtn = document.getElementById("cancel-recipe-btn");
   const shoppingListEl = document.getElementById("shopping-list");
   const generateShoppingBtn = document.getElementById("generate-shopping-btn");
@@ -138,6 +139,7 @@
         name: typeof recipe.name === "string" ? recipe.name : "Untitled recipe",
         ingredients: Array.isArray(recipe.ingredients) ? recipe.ingredients.filter((i) => typeof i === "string") : [],
         quick: !!recipe.quick,
+        source: typeof recipe.source === "string" ? recipe.source : "",
       };
     });
     return out;
@@ -570,9 +572,15 @@
       const item = document.createElement("div");
       item.className = "recipe-item";
 
-      const name = document.createElement("span");
+      const name = document.createElement(recipe.source ? "a" : "span");
       name.className = "recipe-name";
       name.textContent = recipe.quick ? `⚡ ${recipe.name}` : recipe.name;
+      if (recipe.source) {
+        name.href = recipe.source;
+        name.target = "_blank";
+        name.rel = "noopener noreferrer";
+        name.title = "View the original recipe";
+      }
       item.appendChild(name);
 
       const count = document.createElement("span");
@@ -903,6 +911,7 @@
     recipeNameInput.value = "";
     recipeIngredientsInput.value = "";
     recipeQuickInput.checked = false;
+    recipeSourceInput.value = "";
     recipeNameInput.focus();
   });
 
@@ -918,7 +927,12 @@
       .split("\n")
       .map((line) => line.trim())
       .filter(Boolean);
-    plan.recipes[makeId()] = { name, ingredients, quick: recipeQuickInput.checked };
+    plan.recipes[makeId()] = {
+      name,
+      ingredients,
+      quick: recipeQuickInput.checked,
+      source: recipeSourceInput.value.trim(),
+    };
     recipeForm.hidden = true;
     renderRecipes();
     renderMealsTable();

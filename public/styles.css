@@ -653,6 +653,13 @@ button {
 .recipe-name {
   flex: 1;
   font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+a.recipe-name:hover {
+  color: var(--pink-deep);
+  text-decoration: underline;
 }
 
 .recipe-ingredient-count {

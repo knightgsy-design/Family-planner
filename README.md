@@ -35,8 +35,15 @@ that template:
   ticked. Recipes can be flagged **⚡ Quick** (fine for a busy weeknight);
   Monday–Friday dinners only offer quick-tagged recipes (weekends and lunch
   are unrestricted), so a rushed evening never turns up a recipe that needs
-  an hour. Seeded with a short starter set of 10 recipes — 6 quick, 4 not —
-  to pick from rather than an empty box.
+  an hour. A recipe can optionally link to its original source (shown as
+  the recipe's name being clickable) — the starter set is seeded with 9
+  real [BBC Good Food](https://www.bbcgoodfood.com/) recipes (5 quick, 4
+  not) rather than an empty box, each linking back to the original page.
+  Their ingredient lists were reconstructed from what BBC Good Food's own
+  search results surfaced (this environment can't browse their site
+  directly to copy the exact list) — they should be a solid starting point,
+  but worth a quick check against the source link the first time you cook
+  something new from them.
 
 ## Deploying to Netlify
 
