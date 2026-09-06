@@ -502,6 +502,13 @@ button {
   margin: 0;
 }
 
+.card-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .meals-table {
   border-collapse: collapse;
   width: 100%;

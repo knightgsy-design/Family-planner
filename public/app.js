@@ -57,6 +57,7 @@
   const mealsTable = document.getElementById("meals-table");
   const recipesList = document.getElementById("recipes-list");
   const addRecipeBtn = document.getElementById("add-recipe-btn");
+  const loadStarterRecipesBtn = document.getElementById("load-starter-recipes-btn");
   const recipeForm = document.getElementById("recipe-form");
   const recipeNameInput = document.getElementById("recipe-name-input");
   const recipeIngredientsInput = document.getElementById("recipe-ingredients-input");
@@ -913,6 +914,39 @@
     recipeQuickInput.checked = false;
     recipeSourceInput.value = "";
     recipeNameInput.focus();
+  });
+
+  loadStarterRecipesBtn.addEventListener("click", async () => {
+    loadStarterRecipesBtn.disabled = true;
+    const originalLabel = loadStarterRecipesBtn.textContent;
+    loadStarterRecipesBtn.textContent = "Loading…";
+    try {
+      const res = await fetch("/api/starter-recipes");
+      if (!res.ok) throw new Error("Failed to load starter recipes");
+      const starterRecipes = normalizeRecipes(await res.json());
+
+      // Add any starter recipe not already present (matched by id) —
+      // never overwrites a recipe you've already added or edited, so this
+      // is safe to click more than once.
+      let added = 0;
+      Object.entries(starterRecipes).forEach(([id, recipe]) => {
+        if (plan.recipes[id]) return;
+        plan.recipes[id] = recipe;
+        added++;
+      });
+
+      renderRecipes();
+      renderMealsTable();
+      if (added > 0) scheduleSave();
+      loadStarterRecipesBtn.textContent = added > 0 ? `Added ${added} recipe${added === 1 ? "" : "s"}` : "Already up to date";
+    } catch {
+      loadStarterRecipesBtn.textContent = "Couldn't load — try again";
+    } finally {
+      setTimeout(() => {
+        loadStarterRecipesBtn.textContent = originalLabel;
+        loadStarterRecipesBtn.disabled = false;
+      }, 2500);
+    }
   });
 
   cancelRecipeBtn.addEventListener("click", () => {

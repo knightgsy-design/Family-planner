@@ -36,14 +36,25 @@ that template:
   Monday–Friday dinners only offer quick-tagged recipes (weekends and lunch
   are unrestricted), so a rushed evening never turns up a recipe that needs
   an hour. A recipe can optionally link to its original source (shown as
-  the recipe's name being clickable) — the starter set is seeded with 9
-  real [BBC Good Food](https://www.bbcgoodfood.com/) recipes (5 quick, 4
-  not) rather than an empty box, each linking back to the original page.
-  Their ingredient lists were reconstructed from what BBC Good Food's own
-  search results surfaced (this environment can't browse their site
-  directly to copy the exact list) — they should be a solid starting point,
+  the recipe's name being clickable).
+
+  The starter set is 19 real [BBC Good Food](https://www.bbcgoodfood.com/)
+  recipes (10 quick, 9 not), each linking back to the original page. Their
+  ingredient lists were reconstructed from what BBC Good Food's own search
+  results surfaced rather than copied from a direct page fetch (this
+  environment can't browse their site directly) — a solid starting point,
   but worth a quick check against the source link the first time you cook
-  something new from them.
+  something new from them. This is a hand-picked list, not a live scrape:
+  an automated scraper that pulls and stores BBC Good Food's content in
+  bulk would be a meaningfully bigger step than linking out to a handful of
+  recipes, and isn't something this app does.
+
+  Since seed data only applies automatically to a plan that's never been
+  saved, an already-saved plan won't just pick up new starter recipes on
+  its own — click **Load starter recipes** in the Recipe box (`GET
+  /api/starter-recipes`) to add whichever of the current starter set you
+  don't already have. It only adds — it never overwrites or removes a
+  recipe you've added or edited, so it's safe to click any time.
 
 ## Deploying to Netlify
 

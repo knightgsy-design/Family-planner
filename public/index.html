@@ -68,7 +68,10 @@
           <div class="recipes-card">
             <div class="card-header">
               <h2>📖 Recipe box</h2>
-              <button type="button" id="add-recipe-btn" class="ghost-btn">+ Add recipe</button>
+              <div class="card-header-actions">
+                <button type="button" id="load-starter-recipes-btn" class="ghost-btn small">Load starter recipes</button>
+                <button type="button" id="add-recipe-btn" class="ghost-btn">+ Add recipe</button>
+              </div>
             </div>
             <form id="recipe-form" class="recipe-form" hidden>
               <input id="recipe-name-input" type="text" placeholder="Recipe name" required />
