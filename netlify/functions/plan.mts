@@ -47,6 +47,9 @@ export default async (req: Request) => {
     const plan = {
       grid: body.grid,
       notes: body.notes,
+      recipes: body.recipes && typeof body.recipes === "object" ? body.recipes : {},
+      meals: body.meals && typeof body.meals === "object" ? body.meals : {},
+      shoppingList: Array.isArray(body.shoppingList) ? body.shoppingList : [],
       updatedAt: new Date().toISOString(),
       updatedBy: user,
     };

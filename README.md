@@ -11,6 +11,40 @@ It's a static front end (`public/`) backed by a few Netlify Functions
 [Netlify Blobs](https://docs.netlify.com/blobs/overview/) — no separate
 database to set up.
 
+This is a **weekly template**, not a dated calendar — every Monday repeats
+the same plan rather than tracking specific dates. A few features borrowed
+from shared family calendars (Cozi, in particular) are layered on top of
+that template:
+
+- **Color-coded people** — tap the small dots above any cell's text to tag
+  it with Jo, Adam, Oscar, Imogen, or All; each gets its own color, and the
+  cell tints to match so you can scan who's doing what at a glance.
+- **Daily view** — an agenda above the grid for one day at a time, defaulting
+  to today. Step through the week with the ‹ › arrows (it wraps around), jump
+  back to today with one tap, and filter to one or more people to see just
+  their entries for that day.
+- **Search** — the box in the header highlights matching cells and notes
+  and dims everything else, so a search across a page full of small text
+  is easy to scan.
+- **Meal plan, recipe box, and shopping list** — pick lunch and dinner for
+  each day from a shared recipe box (or type a one-off "something else"),
+  and hit **Generate from meals** to turn everything planned that week into
+  a shopping list, with ingredient counts combined (e.g. "onion ×2") when
+  more than one meal needs it. Items can also be added by hand, checked off,
+  or cleared once bought — re-generating never unchecks anything already
+  ticked. Recipes can be flagged **⚡ Quick** (fine for a busy weeknight);
+  Monday–Friday dinners only offer quick-tagged recipes (weekends and lunch
+  are unrestricted), so a rushed evening never turns up a recipe that needs
+  an hour. A recipe can optionally link to its original source (shown as
+  the recipe's name being clickable) — the starter set is seeded with 9
+  real [BBC Good Food](https://www.bbcgoodfood.com/) recipes (5 quick, 4
+  not) rather than an empty box, each linking back to the original page.
+  Their ingredient lists were reconstructed from what BBC Good Food's own
+  search results surfaced (this environment can't browse their site
+  directly to copy the exact list) — they should be a solid starting point,
+  but worth a quick check against the source link the first time you cook
+  something new from them.
+
 ## Deploying to Netlify
 
 1. **Create a new Netlify site from this repo** (via the Netlify UI —
