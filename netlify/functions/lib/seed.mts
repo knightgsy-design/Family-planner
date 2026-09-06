@@ -187,6 +187,146 @@ export const DEFAULT_PLAN = {
       "Thursday 11:30–12:30: Baby yoga (from 17 September)",
   } as Record<string, string>,
 
+  // Shared recipe box: id -> { name, ingredients[], quick, source }. A short
+  // starter list to pick from rather than an empty box, cross-referenced to
+  // real BBC Good Food recipes (source links to the original for the full
+  // method and exact quantities) — "quick" ones are realistic for a
+  // weeknight with Oscar's bedtime routine at 7; the rest are for when
+  // there's more time (weekends).
+  recipes: {
+    "cheese-omelette": {
+      name: "Cheese omelette",
+      ingredients: ["2 eggs", "1 tbsp butter", "Handful grated cheese", "Black pepper"],
+      quick: true,
+      source: "https://www.bbcgoodfood.com/recipes/cheese-omelette",
+    },
+    "chicken-quesadillas": {
+      name: "Chicken quesadillas",
+      ingredients: [
+        "4 tortilla wraps",
+        "4 tbsp salsa",
+        "400g tin black beans, drained",
+        "2 spring onions, sliced",
+        "Cooked chicken, shredded",
+        "Grated cheddar",
+        "Coriander (optional)",
+      ],
+      quick: true,
+      source: "https://www.bbcgoodfood.com/recipes/chicken-quesadillas",
+    },
+    "quick-chicken-noodles": {
+      name: "Quick chicken noodles",
+      ingredients: [
+        "2 chicken breasts, sliced",
+        "2 tbsp oil",
+        "2 garlic cloves, sliced",
+        "1 red pepper, sliced",
+        "Noodles",
+        "Soy sauce",
+      ],
+      quick: true,
+      source: "https://www.bbcgoodfood.com/recipes/quick-chicken-noodles",
+    },
+    "tomato-pasta": {
+      name: "Tomato pasta",
+      ingredients: [
+        "1 tbsp olive oil",
+        "1 garlic clove, crushed",
+        "400g tin chopped tomatoes",
+        "1 tsp vegetable stock powder (or ½ stock cube)",
+        "1 tbsp tomato purée",
+        "Few basil leaves",
+        "Pasta, to serve",
+      ],
+      quick: true,
+      source: "https://www.bbcgoodfood.com/recipes/tomato-basil-sauce",
+    },
+    "homemade-fish-fingers": {
+      name: "Homemade fish fingers",
+      ingredients: [
+        "White fish fillets, cut into strips",
+        "Plain flour",
+        "1 egg, beaten",
+        "Breadcrumbs",
+        "4 baking potatoes",
+        "Frozen peas",
+      ],
+      quick: true,
+      source: "https://www.bbcgoodfood.com/recipes/homemade-fish-fingers",
+    },
+    "spaghetti-bolognese": {
+      name: "Spaghetti Bolognese",
+      ingredients: [
+        "3 tbsp olive oil",
+        "300g beef mince",
+        "200g pork mince",
+        "2 large shallots, finely chopped",
+        "2-3 garlic cloves, crushed",
+        "500g passata",
+        "1 tbsp tomato purée",
+        "Spaghetti, to serve",
+        "Parmesan, to serve",
+      ],
+      quick: false,
+      source: "https://www.bbcgoodfood.com/recipes/classic-bolognese",
+    },
+    "roast-chicken-gravy": {
+      name: "Roast chicken & gravy",
+      ingredients: [
+        "1 onion, roughly chopped",
+        "2 carrots, roughly chopped",
+        "1 free-range chicken (about 1.5kg)",
+        "1 lemon",
+        "Potatoes, to roast",
+        "Gravy granules (or homemade gravy)",
+      ],
+      quick: false,
+      source: "https://www.bbcgoodfood.com/recipes/classic-roast-chicken-gravy",
+    },
+    "chicken-curry": {
+      name: "Chicken curry & rice",
+      ingredients: [
+        "2 tbsp sunflower oil",
+        "1 onion, thinly sliced",
+        "3 tbsp medium curry spice paste (tikka works well)",
+        "Chicken thighs, diced",
+        "Natural yogurt",
+        "Rice, to serve",
+      ],
+      quick: false,
+      source: "https://www.bbcgoodfood.com/recipes/easy-chicken-curry",
+    },
+    "shepherds-pie": {
+      name: "Shepherd's pie",
+      ingredients: [
+        "1 large onion, chopped",
+        "500g pack lamb mince",
+        "Carrots, diced",
+        "Frozen peas",
+        "Potatoes, for mash",
+        "Beef or lamb stock",
+        "Worcestershire sauce",
+      ],
+      quick: false,
+      source: "https://www.bbcgoodfood.com/recipes/no-fuss-shepherds-pie",
+    },
+  } as Record<string, { name: string; ingredients: string[]; quick: boolean; source?: string }>,
+
+  // What's planned for lunch/dinner each day. Each value is either null
+  // (nothing chosen), { type: "recipe", recipeId } pointing into `recipes`,
+  // or { type: "custom", text } for a one-off meal not worth saving as a
+  // recipe.
+  meals: Object.fromEntries(
+    DAYS.map((day) => [day, { lunch: null, dinner: null }]),
+  ) as Record<string, { lunch: MealChoice | null; dinner: MealChoice | null }>,
+
+  // The shopping list: a flat checklist. Items either come from
+  // "Generate from this week's meals" (source: "meal-plan") or were typed
+  // in directly (source: "manual").
+  shoppingList: [] as { id: string; text: string; checked: boolean; source: string }[],
+
   updatedAt: null as string | null,
   updatedBy: null as string | null,
 };
+
+type MealChoice = { type: "recipe"; recipeId: string } | { type: "custom"; text: string };
