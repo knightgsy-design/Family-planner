@@ -1,0 +1,12 @@
+{
+  "name": "family-planner",
+  "private": true,
+  "version": "1.0.0",
+  "description": "An editable weekly family planner for two logged-in users, built on Netlify Functions + Blobs.",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^2.8.2"
+  }
+}

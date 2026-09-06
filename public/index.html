@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Our Weekly Planner</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <!-- Login -->
+  <main id="login-view" class="login-view" hidden>
+    <div class="login-card">
+      <h1>🌸 Our Weekly Planner</h1>
+      <p class="subtitle">Log in to view and edit the plan</p>
+      <form id="login-form">
+        <label for="username">Who's logging in?</label>
+        <select id="username" name="username" required>
+          <option value="" disabled selected>Choose…</option>
+          <option value="Jo">Jo</option>
+          <option value="Adam">Adam</option>
+        </select>
+
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required autocomplete="current-password" />
+
+        <button type="submit">Log in</button>
+        <p id="login-error" class="error" hidden></p>
+      </form>
+    </div>
+  </main>
+
+  <!-- App -->
+  <div id="app-view" class="app-view" hidden>
+    <header class="topbar">
+      <h1>🌸 Our Weekly Planner</h1>
+      <div class="topbar-right">
+        <span id="status-indicator" class="status">Loading…</span>
+        <span id="whoami" class="whoami"></span>
+        <button id="logout-btn" class="ghost-btn">Log out</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="grid-section">
+        <div class="table-scroll">
+          <table id="plan-table" class="plan-table" aria-label="Weekly schedule"></table>
+        </div>
+      </section>
+
+      <section class="notes-section" id="notes-section">
+        <!-- note cards injected by app.js -->
+      </section>
+    </main>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
