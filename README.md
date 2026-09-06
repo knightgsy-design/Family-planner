@@ -38,8 +38,8 @@ that template:
   an hour. A recipe can optionally link to its original source (shown as
   the recipe's name being clickable).
 
-  The starter set is 19 real [BBC Good Food](https://www.bbcgoodfood.com/)
-  recipes (10 quick, 9 not), each linking back to the original page. Their
+  The starter set is 29 real [BBC Good Food](https://www.bbcgoodfood.com/)
+  recipes (13 quick, 16 not), each linking back to the original page. Their
   ingredient lists were reconstructed from what BBC Good Food's own search
   results surfaced rather than copied from a direct page fetch (this
   environment can't browse their site directly) — a solid starting point,
