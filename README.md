@@ -26,6 +26,13 @@ that template:
 - **Search** — the box in the header highlights matching cells and notes
   and dims everything else, so a search across a page full of small text
   is easy to scan.
+- **Meal plan, recipe box, and shopping list** — pick lunch and dinner for
+  each day from a shared recipe box (or type a one-off "something else"),
+  and hit **Generate from meals** to turn everything planned that week into
+  a shopping list, with ingredient counts combined (e.g. "onion ×2") when
+  more than one meal needs it. Items can also be added by hand, checked off,
+  or cleared once bought — re-generating never unchecks anything already
+  ticked.
 
 ## Deploying to Netlify
 

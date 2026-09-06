@@ -187,6 +187,25 @@ export const DEFAULT_PLAN = {
       "Thursday 11:30–12:30: Baby yoga (from 17 September)",
   } as Record<string, string>,
 
+  // Shared recipe box: id -> { name, ingredients[] }. Empty to start —
+  // there's nothing to sensibly seed here.
+  recipes: {} as Record<string, { name: string; ingredients: string[] }>,
+
+  // What's planned for lunch/dinner each day. Each value is either null
+  // (nothing chosen), { type: "recipe", recipeId } pointing into `recipes`,
+  // or { type: "custom", text } for a one-off meal not worth saving as a
+  // recipe.
+  meals: Object.fromEntries(
+    DAYS.map((day) => [day, { lunch: null, dinner: null }]),
+  ) as Record<string, { lunch: MealChoice | null; dinner: MealChoice | null }>,
+
+  // The shopping list: a flat checklist. Items either come from
+  // "Generate from this week's meals" (source: "meal-plan") or were typed
+  // in directly (source: "manual").
+  shoppingList: [] as { id: string; text: string; checked: boolean; source: string }[],
+
   updatedAt: null as string | null,
   updatedBy: null as string | null,
 };
+
+type MealChoice = { type: "recipe"; recipeId: string } | { type: "custom"; text: string };

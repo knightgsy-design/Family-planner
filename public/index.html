@@ -56,6 +56,46 @@
         </div>
       </section>
 
+      <section class="meals-section">
+        <div class="meals-card">
+          <h2>🍽️ Meal plan</h2>
+          <div class="table-scroll">
+            <table id="meals-table" class="meals-table" aria-label="Weekly meal plan"></table>
+          </div>
+        </div>
+
+        <div class="meals-columns">
+          <div class="recipes-card">
+            <div class="card-header">
+              <h2>📖 Recipe box</h2>
+              <button type="button" id="add-recipe-btn" class="ghost-btn">+ Add recipe</button>
+            </div>
+            <form id="recipe-form" class="recipe-form" hidden>
+              <input id="recipe-name-input" type="text" placeholder="Recipe name" required />
+              <textarea id="recipe-ingredients-input" placeholder="One ingredient per line…" rows="4"></textarea>
+              <div class="form-actions">
+                <button type="submit" class="ghost-btn primary">Save recipe</button>
+                <button type="button" id="cancel-recipe-btn" class="ghost-btn">Cancel</button>
+              </div>
+            </form>
+            <div id="recipes-list" class="recipes-list"></div>
+          </div>
+
+          <div class="shopping-card">
+            <div class="card-header">
+              <h2>🛒 Shopping list</h2>
+              <button type="button" id="generate-shopping-btn" class="ghost-btn">Generate from meals</button>
+            </div>
+            <div id="shopping-list" class="shopping-list"></div>
+            <form id="add-item-form" class="add-item-form">
+              <input id="new-item-input" type="text" placeholder="Add an item…" />
+              <button type="submit" class="ghost-btn">Add</button>
+            </form>
+            <button type="button" id="clear-checked-btn" class="ghost-btn small">Clear checked</button>
+          </div>
+        </div>
+      </section>
+
       <section class="notes-section" id="notes-section">
         <!-- note cards injected by app.js -->
       </section>

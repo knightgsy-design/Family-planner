@@ -26,6 +26,11 @@
     { key: "imogen", title: "📚 Imogen" },
   ];
 
+  const MEAL_TYPES = [
+    { key: "lunch", label: "Lunch" },
+    { key: "dinner", label: "Dinner" },
+  ];
+
   // Who a cell can be tagged with, and the color each shows up as — the
   // same idea as Cozi's color-coded family members, just fixed to our five.
   const PEOPLE = [
@@ -49,6 +54,18 @@
   const dailySection = document.getElementById("daily-section");
   const searchInput = document.getElementById("search-input");
   const searchCount = document.getElementById("search-count");
+  const mealsTable = document.getElementById("meals-table");
+  const recipesList = document.getElementById("recipes-list");
+  const addRecipeBtn = document.getElementById("add-recipe-btn");
+  const recipeForm = document.getElementById("recipe-form");
+  const recipeNameInput = document.getElementById("recipe-name-input");
+  const recipeIngredientsInput = document.getElementById("recipe-ingredients-input");
+  const cancelRecipeBtn = document.getElementById("cancel-recipe-btn");
+  const shoppingListEl = document.getElementById("shopping-list");
+  const generateShoppingBtn = document.getElementById("generate-shopping-btn");
+  const addItemForm = document.getElementById("add-item-form");
+  const newItemInput = document.getElementById("new-item-input");
+  const clearCheckedBtn = document.getElementById("clear-checked-btn");
 
   let plan = null; // { grid, notes, updatedAt, updatedBy }
   let currentUser = null;
@@ -98,6 +115,68 @@
   function setCell(slot, day, cell) {
     if (!plan.grid[slot]) plan.grid[slot] = {};
     plan.grid[slot][day] = cell;
+  }
+
+  // ---------- Meal plan / recipes / shopping list data model ----------
+  //
+  // Plans saved before this feature existed (or the seed data) may be
+  // missing these fields entirely — normalize on the way in.
+
+  function makeId() {
+    return typeof crypto !== "undefined" && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `id-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  }
+
+  function normalizeRecipes(value) {
+    if (!value || typeof value !== "object") return {};
+    const out = {};
+    Object.entries(value).forEach(([id, recipe]) => {
+      if (!recipe || typeof recipe !== "object") return;
+      out[id] = {
+        name: typeof recipe.name === "string" ? recipe.name : "Untitled recipe",
+        ingredients: Array.isArray(recipe.ingredients) ? recipe.ingredients.filter((i) => typeof i === "string") : [],
+      };
+    });
+    return out;
+  }
+
+  function normalizeMeals(value) {
+    const source = value && typeof value === "object" ? value : {};
+    const out = {};
+    DAYS.forEach((day) => {
+      const dayMeals = source[day] && typeof source[day] === "object" ? source[day] : {};
+      out[day] = {};
+      MEAL_TYPES.forEach(({ key }) => {
+        const choice = dayMeals[key];
+        if (choice && choice.type === "recipe" && typeof choice.recipeId === "string") {
+          out[day][key] = { type: "recipe", recipeId: choice.recipeId };
+        } else if (choice && choice.type === "custom" && typeof choice.text === "string") {
+          out[day][key] = { type: "custom", text: choice.text };
+        } else {
+          out[day][key] = null;
+        }
+      });
+    });
+    return out;
+  }
+
+  function normalizeShoppingList(value) {
+    if (!Array.isArray(value)) return [];
+    return value
+      .filter((item) => item && typeof item.text === "string")
+      .map((item) => ({
+        id: typeof item.id === "string" ? item.id : makeId(),
+        text: item.text,
+        checked: !!item.checked,
+        source: item.source === "meal-plan" ? "meal-plan" : "manual",
+      }));
+  }
+
+  function normalizePlanExtras() {
+    plan.recipes = normalizeRecipes(plan.recipes);
+    plan.meals = normalizeMeals(plan.meals);
+    plan.shoppingList = normalizeShoppingList(plan.shoppingList);
   }
 
   // ---------- Rendering ----------
@@ -365,9 +444,202 @@
     });
   }
 
+  function renderMealsTable() {
+    mealsTable.innerHTML = "";
+    const today = todayName();
+
+    const thead = document.createElement("thead");
+    const headRow = document.createElement("tr");
+    headRow.appendChild(document.createElement("th"));
+    DAYS.forEach((day) => {
+      const th = document.createElement("th");
+      th.textContent = day;
+      if (day === today) th.classList.add("today-col");
+      headRow.appendChild(th);
+    });
+    thead.appendChild(headRow);
+    mealsTable.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+    MEAL_TYPES.forEach(({ key, label }) => {
+      const row = document.createElement("tr");
+      const labelCell = document.createElement("td");
+      labelCell.className = "meal-label-cell";
+      labelCell.textContent = label;
+      row.appendChild(labelCell);
+
+      DAYS.forEach((day) => {
+        const td = document.createElement("td");
+        td.className = "meal-cell";
+        if (day === today) td.classList.add("today-col");
+
+        const choice = plan.meals[day][key];
+
+        const select = document.createElement("select");
+        select.className = "meal-select";
+
+        const noneOpt = document.createElement("option");
+        noneOpt.value = "";
+        noneOpt.textContent = "— choose —";
+        select.appendChild(noneOpt);
+
+        Object.entries(plan.recipes)
+          .sort((a, b) => a[1].name.localeCompare(b[1].name))
+          .forEach(([id, recipe]) => {
+            const opt = document.createElement("option");
+            opt.value = `recipe:${id}`;
+            opt.textContent = recipe.name;
+            select.appendChild(opt);
+          });
+
+        const customOpt = document.createElement("option");
+        customOpt.value = "custom";
+        customOpt.textContent = "Something else…";
+        select.appendChild(customOpt);
+
+        let currentValue = "";
+        if (choice && choice.type === "recipe") currentValue = `recipe:${choice.recipeId}`;
+        else if (choice && choice.type === "custom") currentValue = "custom";
+        select.value = currentValue;
+
+        const customInput = document.createElement("input");
+        customInput.type = "text";
+        customInput.className = "meal-custom-input";
+        customInput.placeholder = `What's for ${label.toLowerCase()}?`;
+        customInput.value = choice && choice.type === "custom" ? choice.text : "";
+        customInput.hidden = currentValue !== "custom";
+
+        select.addEventListener("change", () => {
+          if (select.value === "") {
+            plan.meals[day][key] = null;
+            customInput.hidden = true;
+            customInput.value = "";
+          } else if (select.value === "custom") {
+            plan.meals[day][key] = { type: "custom", text: customInput.value };
+            customInput.hidden = false;
+            customInput.focus();
+          } else {
+            plan.meals[day][key] = { type: "recipe", recipeId: select.value.slice("recipe:".length) };
+            customInput.hidden = true;
+            customInput.value = "";
+          }
+          scheduleSave();
+        });
+
+        customInput.addEventListener("input", () => {
+          plan.meals[day][key] = { type: "custom", text: customInput.value };
+          scheduleSave();
+        });
+
+        td.appendChild(select);
+        td.appendChild(customInput);
+        row.appendChild(td);
+      });
+
+      tbody.appendChild(row);
+    });
+    mealsTable.appendChild(tbody);
+  }
+
+  function renderRecipes() {
+    recipesList.innerHTML = "";
+    const entries = Object.entries(plan.recipes).sort((a, b) => a[1].name.localeCompare(b[1].name));
+
+    if (!entries.length) {
+      const empty = document.createElement("p");
+      empty.className = "recipes-empty";
+      empty.textContent = "No recipes yet — add one to start planning meals.";
+      recipesList.appendChild(empty);
+      return;
+    }
+
+    entries.forEach(([id, recipe]) => {
+      const item = document.createElement("div");
+      item.className = "recipe-item";
+
+      const name = document.createElement("span");
+      name.className = "recipe-name";
+      name.textContent = recipe.name;
+      item.appendChild(name);
+
+      const count = document.createElement("span");
+      count.className = "recipe-ingredient-count";
+      count.textContent = `${recipe.ingredients.length} ingredient${recipe.ingredients.length === 1 ? "" : "s"}`;
+      item.appendChild(count);
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.type = "button";
+      deleteBtn.className = "ghost-btn small recipe-delete-btn";
+      deleteBtn.textContent = "Delete";
+      deleteBtn.addEventListener("click", () => {
+        if (!confirm(`Delete "${recipe.name}"? Any days it's planned for will need a new choice.`)) return;
+        delete plan.recipes[id];
+        renderRecipes();
+        renderMealsTable();
+        scheduleSave();
+      });
+      item.appendChild(deleteBtn);
+
+      recipesList.appendChild(item);
+    });
+  }
+
+  function renderShoppingList() {
+    shoppingListEl.innerHTML = "";
+    if (!plan.shoppingList.length) {
+      const empty = document.createElement("p");
+      empty.className = "shopping-empty";
+      empty.textContent = "Nothing on the list yet.";
+      shoppingListEl.appendChild(empty);
+      return;
+    }
+
+    // Unchecked items first, so the list gets shorter as you shop.
+    const sorted = [...plan.shoppingList].sort((a, b) => Number(a.checked) - Number(b.checked));
+
+    sorted.forEach((item) => {
+      const row = document.createElement("label");
+      row.className = "shopping-item" + (item.checked ? " checked" : "");
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = item.checked;
+      checkbox.addEventListener("change", () => {
+        const target = plan.shoppingList.find((i) => i.id === item.id);
+        if (target) target.checked = checkbox.checked;
+        renderShoppingList();
+        scheduleSave();
+      });
+      row.appendChild(checkbox);
+
+      const text = document.createElement("span");
+      text.className = "shopping-item-text";
+      text.textContent = item.text;
+      row.appendChild(text);
+
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "shopping-item-remove";
+      removeBtn.textContent = "×";
+      removeBtn.setAttribute("aria-label", `Remove ${item.text}`);
+      removeBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        plan.shoppingList = plan.shoppingList.filter((i) => i.id !== item.id);
+        renderShoppingList();
+        scheduleSave();
+      });
+      row.appendChild(removeBtn);
+
+      shoppingListEl.appendChild(row);
+    });
+  }
+
   function renderAll() {
     renderDaily();
     renderTable();
+    renderMealsTable();
+    renderRecipes();
+    renderShoppingList();
     renderNotes();
     updateMeta();
     applySearch();
@@ -427,6 +699,7 @@
     const res = await fetch("/api/plan");
     if (!res.ok) throw new Error("Failed to load plan");
     plan = await res.json();
+    normalizePlanExtras();
   }
 
   function scheduleSave() {
@@ -442,7 +715,13 @@
       const res = await fetch("/api/plan", {
         method: "PUT",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ grid: plan.grid, notes: plan.notes }),
+        body: JSON.stringify({
+          grid: plan.grid,
+          notes: plan.notes,
+          recipes: plan.recipes,
+          meals: plan.meals,
+          shoppingList: plan.shoppingList,
+        }),
       });
       if (!res.ok) throw new Error("Save failed");
       const saved = await res.json();
@@ -492,6 +771,20 @@
       plan.notes[key] = remoteVal;
       if (el && el.value !== remoteVal) el.value = remoteVal;
     });
+
+    // Meal selects/custom inputs and the recipe/shopping-list forms don't
+    // need the same cell-by-cell care — just skip the refresh entirely if
+    // someone's mid-keystroke in a meal's custom-text box, since that's the
+    // one input in this group tied to existing (rather than new) data.
+    const activeIsMealInput = active && active.classList && active.classList.contains("meal-custom-input");
+    if (!activeIsMealInput) {
+      plan.recipes = normalizeRecipes(remote.recipes);
+      plan.meals = normalizeMeals(remote.meals);
+      plan.shoppingList = normalizeShoppingList(remote.shoppingList);
+      renderMealsTable();
+      renderRecipes();
+      renderShoppingList();
+    }
 
     plan.updatedAt = remote.updatedAt;
     plan.updatedBy = remote.updatedBy;
@@ -590,6 +883,90 @@
   searchInput.addEventListener("input", () => {
     searchQuery = searchInput.value;
     applySearch();
+  });
+
+  addRecipeBtn.addEventListener("click", () => {
+    recipeForm.hidden = false;
+    recipeNameInput.value = "";
+    recipeIngredientsInput.value = "";
+    recipeNameInput.focus();
+  });
+
+  cancelRecipeBtn.addEventListener("click", () => {
+    recipeForm.hidden = true;
+  });
+
+  recipeForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = recipeNameInput.value.trim();
+    if (!name) return;
+    const ingredients = recipeIngredientsInput.value
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    plan.recipes[makeId()] = { name, ingredients };
+    recipeForm.hidden = true;
+    renderRecipes();
+    renderMealsTable();
+    scheduleSave();
+  });
+
+  generateShoppingBtn.addEventListener("click", () => {
+    // Tally ingredients across every recipe-based meal planned this week.
+    const counts = new Map(); // lowercased ingredient -> { text, count }
+    DAYS.forEach((day) => {
+      MEAL_TYPES.forEach(({ key }) => {
+        const choice = plan.meals[day][key];
+        if (!choice || choice.type !== "recipe") return;
+        const recipe = plan.recipes[choice.recipeId];
+        if (!recipe) return;
+        recipe.ingredients.forEach((ingredient) => {
+          const text = ingredient.trim();
+          if (!text) return;
+          const norm = text.toLowerCase();
+          if (!counts.has(norm)) counts.set(norm, { text, count: 0 });
+          counts.get(norm).count++;
+        });
+      });
+    });
+
+    // Keep manually-added items untouched, and preserve the checked state
+    // of previously-generated items so re-generating doesn't uncheck
+    // things already bought.
+    const manualItems = plan.shoppingList.filter((i) => i.source === "manual");
+    const previousMealItems = plan.shoppingList.filter((i) => i.source === "meal-plan");
+    const baseName = (text) => text.replace(/\s*×\d+$/, "").toLowerCase();
+
+    const generated = [];
+    counts.forEach(({ text, count }) => {
+      const existing = previousMealItems.find((i) => baseName(i.text) === text.toLowerCase());
+      generated.push({
+        id: existing ? existing.id : makeId(),
+        text: count > 1 ? `${text} ×${count}` : text,
+        checked: existing ? existing.checked : false,
+        source: "meal-plan",
+      });
+    });
+
+    plan.shoppingList = [...manualItems, ...generated];
+    renderShoppingList();
+    scheduleSave();
+  });
+
+  addItemForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const text = newItemInput.value.trim();
+    if (!text) return;
+    plan.shoppingList.push({ id: makeId(), text, checked: false, source: "manual" });
+    newItemInput.value = "";
+    renderShoppingList();
+    scheduleSave();
+  });
+
+  clearCheckedBtn.addEventListener("click", () => {
+    plan.shoppingList = plan.shoppingList.filter((i) => !i.checked);
+    renderShoppingList();
+    scheduleSave();
   });
 
   // ---------- Boot ----------
