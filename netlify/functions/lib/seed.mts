@@ -1,12 +1,16 @@
-// The corrected September weekly plan, used to seed the planner the first
-// time it's opened (before anyone has saved an edit yet).
+// The September 2026 weekly plan, imported from the family's own
+// spreadsheet (Sheet1 + Meals) and used to seed the planner the first time
+// it's opened (before anyone has saved an edit yet). Person tags on grid
+// cells were added automatically by matching names mentioned in each
+// cell's text (Adam/Jo/Oscar/Imogen/"Family"→All) — not hand-picked, so
+// worth a glance.
 //
-// Corrections applied vs. the original draft, per the notes that came with it:
-//  - Monday 11:00-12:30 and 2:00-3:30 no longer reference the old exercise
-//    class / baby class slots — those moved to Wednesday (Mummy & Baby,
-//    11-12) and Thursday (baby yoga, 11:30-12:30) from September.
-//  - Monday and Friday evenings (5:30-7:00) now include the dog walk that
-//    the "Dog walks" routine allocates to those evenings.
+// Saturday and Sunday are laid out more loosely in the source spreadsheet
+// than Monday-Friday — entries sit in whichever row had space rather than
+// one strictly matching that row's time, so a couple of weekend items
+// (Immy's Saturday class, Sunday's family dinner) land under an early-morning
+// time label rather than their actual time. Preserved as given; easy to
+// drag to a more accurate slot in the app.
 
 export const DAYS = [
   "Monday",
@@ -19,141 +23,241 @@ export const DAYS = [
 ] as const;
 
 export const TIME_SLOTS = [
-  "6:00–7:00",
-  "7:00–8:00",
-  "8:00–9:00",
-  "9:00–10:00",
-  "10:00–11:00",
-  "11:00–12:30",
-  "12:30–2:00",
-  "2:00–3:30",
-  "3:30–4:30",
-  "4:30–5:30",
-  "5:30–7:00",
-  "7:00–7:30",
-  "7:30 onwards",
+  "6:00–6:30am",
+  "6:45am",
+  "7:00am",
+  "7:30am",
+  "7:15–8:00am",
+  "7:40am",
+  "8:00am",
+  "9:00–9:30am",
+  "9:30–10:30am",
+  "10:30–11:00am",
+  "11:00am–12:00pm",
+  "12:00–1:00pm",
+  "1:00–2:00pm",
+  "2:00–3:00pm",
+  "3:00–4:00pm",
+  "4:00–5:00pm",
+  "5:30pm",
+  "5:45pm",
+  "6:30–7:30pm",
+  "7:30pm onwards",
+  "7:45pm",
+  "8:00pm",
+  "8:15pm onwards",
 ] as const;
 
 export const DEFAULT_PLAN = {
   grid: {
-    "6:00–7:00": {
-      Monday: "Oscar wake + feed; Adam takes Oscar where possible so you can sleep",
-      Tuesday: "Oscar + feed; dog walk",
-      Wednesday: "Oscar + feed",
-      Thursday: "Oscar + feed",
-      Friday: "Oscar + feed",
-      Saturday: "Relaxed morning + Oscar",
-      Sunday: "Family morning",
+    "6:00–6:30am": {
+      Monday: { text: "🌅 Oscar wakes + breastfeed. Adam showers", people: ["Adam", "Oscar"] },
+      Tuesday: { text: "🌅 Oscar wakes + breastfeed. Adam walk dog with Oscar if not raining", people: ["Adam", "Oscar"] },
+      Wednesday: { text: "🌅 Oscar wakes + breastfeed.", people: ["Oscar"] },
+      Thursday: { text: "🌅 Oscar wakes + breastfeed. Adam showers", people: ["Adam", "Oscar"] },
+      Friday: { text: "🌅 Oscar wakes + breastfeed. Adam showers", people: ["Adam", "Oscar"] },
+      Saturday: { text: "🏃‍♀️ Run", people: [] },
+      Sunday: { text: "🧺 Wash bedding & towels", people: [] },
     },
-    "7:00–8:00": {
-      Monday: "Breakfast, get Imogen ready",
-      Tuesday: "Breakfast / morning routine",
-      Wednesday: "Breakfast / morning routine",
-      Thursday: "Breakfast / morning routine",
-      Friday: "Young Voices 7:50 / school routine",
-      Saturday: "Breakfast",
-      Sunday: "Breakfast",
+    "6:45am": {
+      Monday: { text: "Imogen up", people: ["Imogen"] },
+      Tuesday: { text: "Jo shower, make beds", people: ["Jo"] },
+      Wednesday: { text: "Jo shower, make beds, washing out", people: ["Jo"] },
+      Thursday: { text: "Imogen up", people: ["Imogen"] },
+      Friday: { text: "Imogen up", people: ["Imogen"] },
+      Saturday: { text: "Oscar swimming 11-11:20", people: ["Oscar"] },
+      Sunday: { text: "🛒 Food shop", people: [] },
     },
-    "8:00–9:00": {
-      Monday: "Imogen school (netball club until 4:20 today); Adam drop-off",
-      Tuesday: "School / household reset",
-      Wednesday: "School / household reset",
-      Thursday: "School / household reset",
-      Friday: "School",
-      Saturday: "Family time",
-      Sunday: "Family time",
+    "7:00am": {
+      Monday: { text: "Family breakfast", people: ["All"] },
+      Tuesday: { text: "", people: [] },
+      Wednesday: { text: "", people: [] },
+      Thursday: { text: "Family breakfast", people: ["All"] },
+      Friday: { text: "Family breakfast", people: ["All"] },
+      Saturday: { text: "Immy BMC - 12:45-13:45", people: ["Imogen"] },
+      Sunday: { text: "🍽️ Family dinner", people: ["All"] },
     },
-    "9:00–10:00": {
-      Monday: "Oscar nap / house reset",
-      Tuesday: "Oscar nap / dog walk",
-      Wednesday: "Oscar nap",
-      Thursday: "Oscar nap",
-      Friday: "Oscar nap",
-      Saturday: "Run 🏃‍♀️",
-      Sunday: "Slow morning",
+    "7:30am": {
+      Monday: { text: "", people: [] },
+      Tuesday: { text: "Oscar breakfast", people: ["Oscar"] },
+      Wednesday: { text: "Oscar breakfast", people: ["Oscar"] },
+      Thursday: { text: "", people: [] },
+      Friday: { text: "", people: [] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "🌙 Prepare for week", people: [] },
     },
-    "10:00–11:00": {
-      Monday: "Get ready / household jobs",
-      Tuesday: "Housework / errands",
-      Wednesday: "Mummy & Baby class 11–12",
-      Thursday: "Housework / errands",
-      Friday: "Housework / errands",
-      Saturday: "Shower / breakfast",
-      Sunday: "Bedding + house jobs",
+    "7:15–8:00am": {
+      Monday: { text: "Imogen get ready, Adam clear up from breakfast, Jo shower, make beds, washing out", people: ["Adam", "Jo", "Imogen"] },
+      Tuesday: { text: "Adam get ready, clear up kitchen", people: ["Adam"] },
+      Wednesday: { text: "Adam get ready, clear up kitchen", people: ["Adam"] },
+      Thursday: { text: "Imogen get ready, Adam clear up from breakfast, Jo shower, make beds", people: ["Adam", "Jo", "Imogen"] },
+      Friday: { text: "Imogen get ready, Adam clear up from breakfast, Jo shower, make beds, washing out", people: ["Adam", "Jo", "Imogen"] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "House tidy", people: [] },
     },
-    "11:00–12:30": {
-      Monday: "Oscar / housework",
-      Tuesday: "Oscar / lunch prep",
-      Wednesday: "Mummy & Baby 11–12 + lunch",
-      Thursday: "Baby yoga 11:30–12:30",
-      Friday: "Oscar / lunch",
-      Saturday: "Family time",
-      Sunday: "Food shop",
+    "7:40am": {
+      Monday: { text: "", people: [] },
+      Tuesday: { text: "", people: [] },
+      Wednesday: { text: "", people: [] },
+      Thursday: { text: "", people: [] },
+      Friday: { text: "Adam school drop-off for 07:50 (Young Voices)", people: ["Adam"] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "🏃‍♀️ Run", people: [] },
     },
-    "12:30–2:00": {
-      Monday: "Lunch + Oscar",
-      Tuesday: "Lunch + Oscar",
-      Wednesday: "Lunch + Oscar",
-      Thursday: "Lunch + Oscar",
-      Friday: "Lunch + Oscar",
-      Saturday: "Lunch",
-      Sunday: "Lunch",
+    "8:00am": {
+      Monday: { text: "Adam school drop-off for 08:10", people: ["Adam"] },
+      Tuesday: { text: "Adam leave for work", people: ["Adam"] },
+      Wednesday: { text: "Adam leave for work", people: ["Adam"] },
+      Thursday: { text: "Adam school drop-off for 08:10", people: ["Adam"] },
+      Friday: { text: "", people: [] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "Adam sailing", people: ["Adam"] },
     },
-    "2:00–3:30": {
-      Monday: "Oscar",
-      Tuesday: "Oscar / household jobs",
-      Wednesday: "Oscar / household jobs",
-      Thursday: "Oscar / household jobs",
-      Friday: "Oscar / household jobs",
-      Saturday: "Family time",
-      Sunday: "Family time",
+    "9:00–9:30am": {
+      Monday: { text: "💤 Oscar nap 1\nTidy downstairs", people: ["Oscar"] },
+      Tuesday: { text: "💤 Oscar nap 1\nTidy downstairs", people: ["Oscar"] },
+      Wednesday: { text: "💤 Oscar nap 1\nTidy downstairs", people: ["Oscar"] },
+      Thursday: { text: "💤 Oscar nap 1\nTidy downstairs", people: ["Oscar"] },
+      Friday: { text: "💤 Oscar nap 1\nTidy downstairs", people: ["Oscar"] },
+      Saturday: { text: "💤 Oscar nap 1", people: ["Oscar"] },
+      Sunday: { text: "💤 Oscar nap 1", people: ["Oscar"] },
     },
-    "3:30–4:30": {
-      Monday: "Oscar nap",
-      Tuesday: "Oscar nap",
-      Wednesday: "Oscar nap",
-      Thursday: "Oscar nap",
-      Friday: "Oscar nap",
-      Saturday: "Family time",
-      Sunday: "Family time",
+    "9:30–10:30am": {
+      Monday: { text: "Playtime", people: [] },
+      Tuesday: { text: "Laundry / household jobs", people: [] },
+      Wednesday: { text: "Light housework", people: [] },
+      Thursday: { text: "Laundry / household jobs", people: [] },
+      Friday: { text: "General house reset", people: [] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "", people: [] },
     },
-    "4:30–5:30": {
-      Monday: "Imogen / after-school routine",
-      Tuesday: "Imogen / after-school routine",
-      Wednesday: "Imogen / after-school routine",
-      Thursday: "Imogen / after-school routine",
-      Friday: "Maths club 4:30 (every 3rd week)",
-      Saturday: "Family time",
-      Sunday: "Family time",
+    "10:30–11:00am": {
+      Monday: { text: "Get ready and leave for pushy mums", people: [] },
+      Tuesday: { text: "Oscar / household jobs", people: ["Oscar"] },
+      Wednesday: { text: "Get ready to go out", people: [] },
+      Thursday: { text: "Get ready for baby yoga", people: [] },
+      Friday: { text: "Oscar / lunch prep", people: ["Oscar"] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "", people: [] },
     },
-    "5:30–7:00": {
-      Monday: "Adam home → dinner + dog walk",
-      Tuesday: "Adam home → dog walk / dinner",
-      Wednesday: "Adam home → dinner",
-      Thursday: "Adam home → dinner",
-      Friday: "Adam home → dinner + dog walk",
-      Saturday: "Dinner",
-      Sunday: "Dinner",
+    "11:00am–12:00pm": {
+      Monday: { text: "🏋️ Pushy mums", people: [] },
+      Tuesday: { text: "Oscar + lunch prep", people: ["Oscar"] },
+      Wednesday: { text: "👶 Mummy & Baby class", people: [] },
+      Thursday: { text: "👶 Baby yoga starts 11:30", people: [] },
+      Friday: { text: "Oscar + lunch prep", people: ["Oscar"] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "", people: [] },
     },
-    "7:00–7:30": {
-      Monday: "Oscar bedtime routine",
-      Tuesday: "Oscar bedtime routine",
-      Wednesday: "Oscar bedtime routine",
-      Thursday: "Oscar bedtime routine",
-      Friday: "Oscar bedtime routine",
-      Saturday: "Oscar bedtime",
-      Sunday: "Oscar bedtime",
+    "12:00–1:00pm": {
+      Monday: { text: "Home for lunch\n💤 Oscar nap 2 in car", people: ["Oscar"] },
+      Tuesday: { text: "Lunch + Oscar feed", people: ["Oscar"] },
+      Wednesday: { text: "Lunch + Oscar feed", people: ["Oscar"] },
+      Thursday: { text: "Baby yoga → lunch", people: [] },
+      Friday: { text: "Lunch + Oscar feed", people: ["Oscar"] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "", people: [] },
     },
-    "7:30 onwards": {
-      Monday: "Imogen time / relax",
-      Tuesday: "Relax",
-      Wednesday: "Relax",
-      Thursday: "Relax",
-      Friday: "Relax",
-      Saturday: "Family evening",
-      Sunday: "Prep for week",
+    "1:00–2:00pm": {
+      Monday: { text: "Playtime", people: [] },
+      Tuesday: { text: "💤 Oscar nap 2", people: ["Oscar"] },
+      Wednesday: { text: "💤 Oscar nap 2", people: ["Oscar"] },
+      Thursday: { text: "💤 Oscar nap 2", people: ["Oscar"] },
+      Friday: { text: "💤 Oscar nap 2", people: ["Oscar"] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "", people: [] },
     },
-  } as Record<string, Record<string, string>>,
+    "2:00–3:00pm": {
+      Monday: { text: "", people: [] },
+      Tuesday: { text: "Oscar / household jobs", people: ["Oscar"] },
+      Wednesday: { text: "Oscar / household jobs", people: ["Oscar"] },
+      Thursday: { text: "Oscar / household jobs", people: ["Oscar"] },
+      Friday: { text: "Oscar / household jobs", people: ["Oscar"] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "", people: [] },
+    },
+    "3:00–4:00pm": {
+      Monday: { text: "💤 Oscar nap 3", people: ["Oscar"] },
+      Tuesday: { text: "💤 Oscar nap 3", people: ["Oscar"] },
+      Wednesday: { text: "💤 Oscar nap 3", people: ["Oscar"] },
+      Thursday: { text: "💤 Oscar nap 3", people: ["Oscar"] },
+      Friday: { text: "💤 Oscar nap 3", people: ["Oscar"] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "", people: [] },
+    },
+    "4:00–5:00pm": {
+      Monday: { text: "", people: [] },
+      Tuesday: { text: "", people: [] },
+      Wednesday: { text: "Imogen home + snack", people: ["Imogen"] },
+      Thursday: { text: "Imogen home + snack", people: ["Imogen"] },
+      Friday: { text: "Maths club 4:30 every 3rd week", people: [] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "", people: [] },
+    },
+    "5:30pm": {
+      Monday: { text: "Adam home\nOscar dinner", people: ["Adam", "Oscar"] },
+      Tuesday: { text: "Adam home\nOscar dinner", people: ["Adam", "Oscar"] },
+      Wednesday: { text: "Adam home, make dinner", people: ["Adam"] },
+      Thursday: { text: "Adam home", people: ["Adam"] },
+      Friday: { text: "Adam home\nOscar dinner", people: ["Adam", "Oscar"] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "", people: [] },
+    },
+    "5:45pm": {
+      Monday: { text: "", people: [] },
+      Tuesday: { text: "", people: [] },
+      Wednesday: { text: "🍽️ Family dinner", people: ["All"] },
+      Thursday: { text: "🍽️ Family dinner", people: ["All"] },
+      Friday: { text: "", people: [] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "", people: [] },
+    },
+    "6:30–7:30pm": {
+      Monday: { text: "One person play, bath, bedtime\nOne person walk dog", people: [] },
+      Tuesday: { text: "Adam play, bath, bedtime\nJo run", people: ["Adam", "Jo"] },
+      Wednesday: { text: "Immy homework, shower & hairwash\nOscar play time, bath, bedtime", people: ["Oscar", "Imogen"] },
+      Thursday: { text: "Immy homework, shower\nOscar play time, bath, bedtime", people: ["Oscar", "Imogen"] },
+      Friday: { text: "Adam play, bath, bedtime\nJo run", people: ["Adam", "Jo"] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "", people: [] },
+    },
+    "7:30pm onwards": {
+      Monday: { text: "🌙 Oscar asleep, dinner", people: ["Oscar"] },
+      Tuesday: { text: "🌙 Oscar asleep, dinner\nWalk dog, drop to Chris", people: ["Oscar"] },
+      Wednesday: { text: "🌙 Oscar asleep", people: ["Oscar"] },
+      Thursday: { text: "🌙 Oscar asleep", people: ["Oscar"] },
+      Friday: { text: "🌙 Oscar asleep, dinner\nWalk dog", people: ["Oscar"] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "", people: [] },
+    },
+    "7:45pm": {
+      Monday: { text: "", people: [] },
+      Tuesday: { text: "", people: [] },
+      Wednesday: { text: "", people: [] },
+      Thursday: { text: "Jo leave for tap", people: ["Jo"] },
+      Friday: { text: "", people: [] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "", people: [] },
+    },
+    "8:00pm": {
+      Monday: { text: "", people: [] },
+      Tuesday: { text: "", people: [] },
+      Wednesday: { text: "Immy in bed, read, asleep for 8:15.8:30", people: ["Imogen"] },
+      Thursday: { text: "Immy in bed, read, asleep for 8:15.8:30", people: ["Imogen"] },
+      Friday: { text: "", people: [] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "", people: [] },
+    },
+    "8:15pm onwards": {
+      Monday: { text: "Tidy up downstairs", people: [] },
+      Tuesday: { text: "Tidy up downstairs", people: [] },
+      Wednesday: { text: "Tidy up downstairs", people: [] },
+      Thursday: { text: "Tidy up downstairs", people: [] },
+      Friday: { text: "Tidy up downstairs", people: [] },
+      Saturday: { text: "", people: [] },
+      Sunday: { text: "", people: [] },
+    },
+  } as Record<string, Record<string, { text: string; people: string[] }>>,
 
   notes: {
     running:
@@ -603,20 +707,131 @@ export const DEFAULT_PLAN = {
       quick: true,
       source: "https://www.bbcgoodfood.com/recipes/classic-minestrone-soup",
     },
+
+    // Family staples pulled from the household's own meal-idea list — no
+    // source link since these aren't from a specific recipe site, just
+    // familiar go-tos with a reasonable, simple ingredient list.
+    "salmon-veg-boursin": {
+      name: "Salmon & veg with boursin",
+      ingredients: ["Salmon fillets", "Mixed vegetables", "Boursin cheese", "New potatoes"],
+      quick: true,
+    },
+    "chicken-salad": {
+      name: "Chicken salad",
+      ingredients: ["Cooked chicken", "Mixed salad leaves", "Cherry tomatoes", "Cucumber", "Dressing"],
+      quick: true,
+    },
+    "steak": {
+      name: "Steak",
+      ingredients: ["Steak", "Butter", "Potatoes (chips or mash)", "Green vegetables"],
+      quick: true,
+    },
+    "prawn-orzo-pasta": {
+      name: "Prawn & orzo pasta",
+      ingredients: ["Prawns", "Orzo pasta", "Cherry tomatoes", "Garlic", "Lemon", "Olive oil"],
+      quick: true,
+    },
+    "cheesy-bean-wraps": {
+      name: "Cheesy bean wraps",
+      ingredients: ["Tortilla wraps", "Baked beans", "Grated cheese"],
+      quick: true,
+    },
+    "chicken-wraps": {
+      name: "Chicken wraps",
+      ingredients: ["Tortilla wraps", "Cooked chicken", "Salad leaves", "Sauce of choice"],
+      quick: true,
+    },
+    "bagels": {
+      name: "Bagels",
+      ingredients: ["Bagels", "Cream cheese or filling of choice"],
+      quick: true,
+    },
+    "beany-salad-bowl": {
+      name: "Beany salad bowl",
+      ingredients: ["Mixed beans (tinned)", "Salad leaves", "Cherry tomatoes", "Cucumber", "Dressing"],
+      quick: true,
+    },
+    "overnight-oats": {
+      name: "Overnight oats",
+      ingredients: ["Oats", "Milk (or almond milk)", "Yoghurt", "Fruit"],
+      quick: true,
+    },
+    "porridge": {
+      name: "Porridge",
+      ingredients: ["Oats", "Milk or water", "Honey or sugar"],
+      quick: true,
+    },
+    "scrambled-eggs-toast": {
+      name: "Scrambled eggs & toast",
+      ingredients: ["Eggs", "Butter", "Bread"],
+      quick: true,
+    },
+    "yoghurt-granola": {
+      name: "Yoghurt & granola",
+      ingredients: ["Yoghurt", "Granola", "Fruit"],
+      quick: true,
+    },
   } as Record<string, { name: string; ingredients: string[]; quick: boolean; source?: string }>,
 
-  // What's planned for lunch/dinner each day. Each value is either null
-  // (nothing chosen), { type: "recipe", recipeId } pointing into `recipes`,
-  // or { type: "custom", text } for a one-off meal not worth saving as a
-  // recipe.
-  meals: Object.fromEntries(
-    DAYS.map((day) => [day, { lunch: null, dinner: null }]),
-  ) as Record<string, { lunch: MealChoice | null; dinner: MealChoice | null }>,
+  // What's planned for breakfast/lunch/dinner each day, imported from the
+  // Meals sheet's weekly grid. Each value is either null (nothing chosen),
+  // { type: "recipe", recipeId } pointing into `recipes`, or
+  // { type: "custom", text } for a one-off meal not worth saving as a
+  // recipe (e.g. "leftovers"). Breakfast wasn't filled in for specific days
+  // in the source, so it's null throughout — the breakfast recipes above
+  // are there to pick from whenever.
+  meals: {
+    Monday: {
+      breakfast: null,
+      lunch: { type: "recipe", recipeId: "chicken-wraps" },
+      dinner: { type: "recipe", recipeId: "salmon-veg-boursin" },
+    },
+    Tuesday: {
+      breakfast: null,
+      lunch: { type: "recipe", recipeId: "beany-salad-bowl" },
+      dinner: { type: "recipe", recipeId: "chilli-con-carne" },
+    },
+    Wednesday: {
+      breakfast: null,
+      lunch: { type: "custom", text: "Leftover chilli" },
+      dinner: { type: "recipe", recipeId: "prawn-orzo-pasta" },
+    },
+    Thursday: {
+      breakfast: null,
+      lunch: { type: "custom", text: "Leftover orzo / tuna wrap" },
+      dinner: { type: "recipe", recipeId: "cheesy-bean-wraps" },
+    },
+    Friday: {
+      breakfast: null,
+      lunch: { type: "recipe", recipeId: "beany-salad-bowl" },
+      dinner: null,
+    },
+    Saturday: { breakfast: null, lunch: null, dinner: null },
+    Sunday: {
+      breakfast: null,
+      lunch: null,
+      dinner: { type: "recipe", recipeId: "roast-chicken-gravy" },
+    },
+  } as Record<string, { breakfast: MealChoice | null; lunch: MealChoice | null; dinner: MealChoice | null }>,
 
-  // The shopping list: a flat checklist. Items either come from
-  // "Generate from this week's meals" (source: "meal-plan") or were typed
-  // in directly (source: "manual").
-  shoppingList: [] as { id: string; text: string; checked: boolean; source: string }[],
+  // The shopping list: a flat checklist, imported from the Meals sheet's
+  // list. Items either come from "Generate from this week's meals"
+  // (source: "meal-plan") or were typed in directly (source: "manual") —
+  // these count as manual since they weren't generated from a recipe.
+  shoppingList: [
+    "Chicken", "Sausage meat", "Salmon", "Beef", "Prawns", "Chorizo",
+    "Milk", "Almond milk", "Yoghurt", "Squeezy yoghurts",
+    "Tomatoes", "Spinach", "Potatoes", "Cauliflower", "Bananas", "Berries",
+    "Carrots", "Swede", "Broccoli", "Green beans", "Avocados", "Cucumber",
+    "Peppers", "Onions", "Celery", "Mushrooms", "Kale",
+    "Eggs", "Bread", "Wraps", "Dark chocolate", "Yorkshire puddings",
+    "Orzo", "Oat bars", "Crisps", "Loo roll", "Rice cakes",
+  ].map((text, i) => ({ id: `seed-shopping-${i}`, text, checked: false, source: "manual" })) as {
+    id: string;
+    text: string;
+    checked: boolean;
+    source: string;
+  }[],
 
   updatedAt: null as string | null,
   updatedBy: null as string | null,

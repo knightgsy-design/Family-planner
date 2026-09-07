@@ -3,19 +3,29 @@
 
   const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const TIME_SLOTS = [
-    "6:00–7:00",
-    "7:00–8:00",
-    "8:00–9:00",
-    "9:00–10:00",
-    "10:00–11:00",
-    "11:00–12:30",
-    "12:30–2:00",
-    "2:00–3:30",
-    "3:30–4:30",
-    "4:30–5:30",
-    "5:30–7:00",
-    "7:00–7:30",
-    "7:30 onwards",
+    "6:00–6:30am",
+    "6:45am",
+    "7:00am",
+    "7:30am",
+    "7:15–8:00am",
+    "7:40am",
+    "8:00am",
+    "9:00–9:30am",
+    "9:30–10:30am",
+    "10:30–11:00am",
+    "11:00am–12:00pm",
+    "12:00–1:00pm",
+    "1:00–2:00pm",
+    "2:00–3:00pm",
+    "3:00–4:00pm",
+    "4:00–5:00pm",
+    "5:30pm",
+    "5:45pm",
+    "6:30–7:30pm",
+    "7:30pm onwards",
+    "7:45pm",
+    "8:00pm",
+    "8:15pm onwards",
   ];
 
   const NOTE_SECTIONS = [
@@ -27,6 +37,7 @@
   ];
 
   const MEAL_TYPES = [
+    { key: "breakfast", label: "Breakfast" },
     { key: "lunch", label: "Lunch" },
     { key: "dinner", label: "Dinner" },
   ];
@@ -58,6 +69,7 @@
   const recipesList = document.getElementById("recipes-list");
   const addRecipeBtn = document.getElementById("add-recipe-btn");
   const loadStarterRecipesBtn = document.getElementById("load-starter-recipes-btn");
+  const importScheduleBtn = document.getElementById("import-schedule-btn");
   const recipeForm = document.getElementById("recipe-form");
   const recipeNameInput = document.getElementById("recipe-name-input");
   const recipeIngredientsInput = document.getElementById("recipe-ingredients-input");
@@ -921,9 +933,9 @@
     const originalLabel = loadStarterRecipesBtn.textContent;
     loadStarterRecipesBtn.textContent = "Loading…";
     try {
-      const res = await fetch("/api/starter-recipes");
+      const res = await fetch("/api/seed-data");
       if (!res.ok) throw new Error("Failed to load starter recipes");
-      const starterRecipes = normalizeRecipes(await res.json());
+      const starterRecipes = normalizeRecipes((await res.json()).recipes);
 
       // Add any starter recipe not already present (matched by id) —
       // never overwrites a recipe you've already added or edited, so this
@@ -946,6 +958,51 @@
         loadStarterRecipesBtn.textContent = originalLabel;
         loadStarterRecipesBtn.disabled = false;
       }, 2500);
+    }
+  });
+
+  importScheduleBtn.addEventListener("click", async () => {
+    const ok = confirm(
+      "This replaces the weekly schedule grid and the meal plan with the latest imported version. " +
+        "Your shopping list is untouched (new items are added, not replacing what's there), and your " +
+        "recipes aren't touched either. This can't be undone from here — continue?",
+    );
+    if (!ok) return;
+
+    importScheduleBtn.disabled = true;
+    const originalLabel = importScheduleBtn.textContent;
+    importScheduleBtn.textContent = "Importing…";
+    try {
+      const res = await fetch("/api/seed-data");
+      if (!res.ok) throw new Error("Failed to load schedule");
+      const seed = await res.json();
+
+      plan.grid = seed.grid;
+      plan.meals = normalizeMeals(seed.meals);
+
+      // Shopping list stays additive, same rule as everywhere else: only
+      // add items that aren't already there (matched case-insensitively),
+      // never touch or remove what's already on the list.
+      const existingText = new Set(plan.shoppingList.map((i) => i.text.trim().toLowerCase()));
+      let addedItems = 0;
+      normalizeShoppingList(seed.shoppingList).forEach((item) => {
+        const key = item.text.trim().toLowerCase();
+        if (existingText.has(key)) return;
+        existingText.add(key);
+        plan.shoppingList.push({ ...item, id: makeId() });
+        addedItems++;
+      });
+
+      renderAll();
+      scheduleSave();
+      importScheduleBtn.textContent = `Imported (+${addedItems} shopping item${addedItems === 1 ? "" : "s"})`;
+    } catch {
+      importScheduleBtn.textContent = "Couldn't import — try again";
+    } finally {
+      setTimeout(() => {
+        importScheduleBtn.textContent = originalLabel;
+        importScheduleBtn.disabled = false;
+      }, 3000);
     }
   });
 

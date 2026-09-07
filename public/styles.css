@@ -218,6 +218,10 @@ button {
 
 /* ---------- Grid ---------- */
 
+.grid-section .card-header {
+  padding: 0 2px;
+}
+
 .table-scroll {
   overflow-x: auto;
   background: var(--card);

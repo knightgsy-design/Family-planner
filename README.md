@@ -38,23 +38,34 @@ that template:
   an hour. A recipe can optionally link to its original source (shown as
   the recipe's name being clickable).
 
-  The starter set is 29 real [BBC Good Food](https://www.bbcgoodfood.com/)
-  recipes (13 quick, 16 not), each linking back to the original page. Their
-  ingredient lists were reconstructed from what BBC Good Food's own search
-  results surfaced rather than copied from a direct page fetch (this
-  environment can't browse their site directly) — a solid starting point,
-  but worth a quick check against the source link the first time you cook
-  something new from them. This is a hand-picked list, not a live scrape:
-  an automated scraper that pulls and stores BBC Good Food's content in
-  bulk would be a meaningfully bigger step than linking out to a handful of
-  recipes, and isn't something this app does.
+  Meal planning covers **breakfast, lunch, and dinner** — breakfast has no
+  day-specific picks seeded in yet, just recipes to choose from whenever.
+
+  The recipe box has 41 recipes: 29 real [BBC Good Food](https://www.bbcgoodfood.com/)
+  ones (13 quick, 16 not), each linking back to the original page, plus 12
+  family staples (salmon & veg, chicken wraps, overnight oats, etc.) with no
+  source link since they're not from a specific site. The BBC Good Food
+  ingredient lists were reconstructed from what search results surfaced
+  rather than copied from a direct page fetch (this environment can't
+  browse their site directly) — a solid starting point, but worth a quick
+  check against the source link the first time you cook something new from
+  them. This is a hand-picked list, not a live scrape: an automated
+  scraper that pulls and stores BBC Good Food's content in bulk would be a
+  meaningfully bigger step than linking out to a handful of recipes, and
+  isn't something this app does.
 
   Since seed data only applies automatically to a plan that's never been
-  saved, an already-saved plan won't just pick up new starter recipes on
-  its own — click **Load starter recipes** in the Recipe box (`GET
-  /api/starter-recipes`) to add whichever of the current starter set you
-  don't already have. It only adds — it never overwrites or removes a
-  recipe you've added or edited, so it's safe to click any time.
+  saved, an already-saved plan won't just pick up new seed content on its
+  own — two buttons pull from it explicitly (both backed by `GET
+  /api/seed-data`):
+  - **Load starter recipes** (in the Recipe box) — adds whichever starter
+    recipes you don't already have, matched by id. Never overwrites or
+    removes a recipe you've added or edited, so it's safe to click any time.
+  - **Import latest schedule** (above the weekly grid) — replaces the grid
+    and meal plan with the current seed version, after a confirmation
+    prompt (this one *does* overwrite, since a schedule import is meant to
+    replace, not merge). Shopping-list items from the seed are still only
+    ever added, never replacing what's already on your list.
 
 ## Deploying to Netlify
 
@@ -101,16 +112,29 @@ key `plan`, via `PUT /api/plan`.
 
 ## Notes on the seed data
 
-A few small corrections were made versus the original draft, per what was
-flagged when it was written:
+The weekly grid, meal plan, and shopping list are imported from the
+family's own September 2026 planning spreadsheet (Sheet1 + Meals), not
+hand-written — 23 time slots instead of the original 13, running from
+6:00am to 8:15pm onwards. A few things worth knowing about that import:
 
-- Monday's old 11:00–12:30 exercise class and 2:00–3:30 baby class slots
-  were removed — those classes moved to **Wednesday** (Mummy & Baby,
-  11–12) and **Thursday** (baby yoga, 11:30–12:30) from September, and
-  Wednesday's baby class replaces the old Wednesday exercise class.
-- Monday and Friday evenings (5:30–7:00) now include the dog walk that the
-  dog-walking routine allocates to those evenings, which the original grid
-  had left out.
+- **Person tags were added automatically**, not hand-picked — any cell
+  mentioning "Adam", "Jo", "Oscar", "Imogen"/"Immy", or "Family" (→ All) by
+  name got that tag. Worth a skim rather than assumed correct.
+- **Saturday and Sunday are looser** in the source spreadsheet than
+  Monday–Friday — entries sit in whichever row had space rather than one
+  that strictly matches its time label, so a couple of weekend items
+  (Immy's Saturday class, Sunday's family dinner) currently show up under
+  an early-morning time slot rather than their real time. Preserved as
+  given rather than guessed at; easy to drag to a better slot in the app.
+- **The meal plan's dinner picks link to matching recipes** where one
+  already existed in the box (Tuesday's chilli, Sunday's roast); the rest
+  are either a new recipe added for this import or a one-off "custom" entry
+  (the Wednesday/Thursday leftovers, since those aren't a base recipe).
+- **The shopping list is imported as-is** from the spreadsheet's list —
+  it's a snapshot of what was needed at the time, not tied to the meal
+  plan's ingredients, so it won't shrink as you check things off the way a
+  freshly-generated list would track against recipes.
 
-Everything else is editable from day one, so treat the seed data as a
-starting point, not the last word.
+Everything is editable from day one — treat all of this as a starting
+point, not the last word, especially the auto-tagged people and the
+loosely-timed weekend rows.
